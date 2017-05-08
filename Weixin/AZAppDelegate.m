@@ -7,8 +7,6 @@
 //
 
 #import "AZAppDelegate.h"
-#import "MASShortcut.h"
-#import "MASShortcut+Monitoring.h"
 #import "iTunes.h"
 #import "AZThemeManager.h"
 #import "NSButton+Style.h"
@@ -32,19 +30,6 @@
     [self changeBackground:self.webView];
 }
 
-- (IBAction)donateToAladdin:(id)sender{
-    
-    NSBeginAlertSheet(@"赞助作者一点猫粮吧？",
-                      @"好，去捐赠！",
-                      nil,
-                      @"不够好，算了",
-                      self.window,
-                      self,
-                      @selector(sheetDidEnd:returnCode:contextInfo:),
-                      @selector(sheetDidDismiss:returnCode:contextInfo:),
-                      (__bridge void *)(sender),
-                      @"虽然这个App很简单，但还是考虑赞助给Aladdin和他的12只猫猫吧!如有建议和bug请联系微信号:Aladdin");
-}
 - (IBAction)reloadWX:(id)sender{
     [self.webView.mainFrame reloadFromOrigin];
 }
@@ -58,20 +43,6 @@
     
 }
 #pragma mark alertDelegate END
-
-- (void)registerShortCuts{
-    MASShortcut *shortcut = [MASShortcut shortcutWithKeyCode:kVK_ANSI_O modifierFlags:NSCommandKeyMask|NSControlKeyMask];
-    NSString *  _constantShortcutMonitor = [MASShortcut addGlobalHotkeyMonitorWithShortcut:shortcut handler:^{
-        [self.window orderFront:nil];
-        [NSApp activateIgnoringOtherApps:YES];
-        if([self.window isMiniaturized])
-        {
-            [self.window deminiaturize:self];
-        }
-
-    }];
-    DLog(@"%@",_constantShortcutMonitor);
-}
 
 - (void)addWeixinToolBar{
     self.toolBar.alphaValue = 0.3;
@@ -98,9 +69,8 @@
     [self.window setFrameAutosaveName:[self.window representedFilename]];
     
     [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
-    [self registerShortCuts];
     NSURLRequest *request = [NSURLRequest requestWithURL:
-                             [NSURL URLWithString:@"http://wx.qq.com/?lang=zh_CN"]];
+                             [NSURL URLWithString:@"https://wx.qq.com/?lang=zh_CN"]];
     [self.webView.mainFrame loadRequest:request];
     [self addWeixinToolBar];
     
@@ -133,8 +103,8 @@
     }
     
     NSUserNotification *notification = [[NSUserNotification alloc] init];
-    notification.title = @"小伙伴发来新的微信";
-    notification.informativeText = title;
+    notification.title = title;
+    notification.informativeText = @"你收到了一条新的微信";
     notification.soundName = NSUserNotificationDefaultSoundName;
     
     [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
